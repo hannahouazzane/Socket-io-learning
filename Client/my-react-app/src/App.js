@@ -8,6 +8,15 @@ const socket = io.connect("http://localhost:3001");
 function App() {
   const [room, setRoom] = useState("");
 
+  useEffect(() => {
+    socket.on("recieve_message", (data) => {
+      console.log(data.display_grid);
+      if (data.display_grid) {
+        document.getElementById("display").style.display = "block";
+      }
+    });
+  });
+
   const sendRoom = () => {
     socket.emit("send-room", { number: room });
   };
