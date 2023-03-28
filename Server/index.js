@@ -48,3 +48,7 @@ io.on("connection", (socket) => {
     }
   });
 });
+
+http.listen(3001, () => {
+  console.log("I am running and I am updating!");
+});
