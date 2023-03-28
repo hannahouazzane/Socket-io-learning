@@ -1,23 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import "./Square/Board";
+import io from "socket.io-client";
+import { useEffect, useState } from "react";
+import { Board } from "./Square/Board";
 
+const socket = io.connect("http://localhost:3001");
 function App() {
+  const [room, setRoom] = useState("");
+
+  const sendRoom = () => {
+    socket.emit("send-room", { number: room });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <label>Join a room</label>
+      <input
+        onChange={(event) => {
+          setRoom(event.target.value);
+        }}
+      ></input>
+      <button onClick={sendRoom}>Send a message</button>
+
+      <div id="display" style={{ display: "none" }}>
+        <Board />
+      </div>
     </div>
   );
 }
