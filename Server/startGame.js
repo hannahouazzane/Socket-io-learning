@@ -3,26 +3,12 @@ function socketsInRoom(room, io) {
   return roomSize ? roomSize.size : 0;
 }
 
-function addRoomToList(room, playerID, roomList) {
+function addRoomToList(room, roomList) {
   let roomInfo = {
-    room: room,
-    playerX: playerID,
-    playerO: "none",
-    game: ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"],
+    [room]: { game: ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"] },
   };
 
   roomList.push(roomInfo);
 }
 
-function addSecondPlayer(room, playerID, roomList) {
-  console.log(roomList);
-  let roomIndex = "";
-  roomList.forEach((element) => {
-    if (element["room"] == room) {
-      roomIndex = roomList.indexOf(element);
-      element["playerO"] = playerID;
-    }
-  });
-}
-
-module.exports = { addRoomToList, socketsInRoom, addSecondPlayer };
+module.exports = { addRoomToList, socketsInRoom };

@@ -29,13 +29,9 @@ io.on("connection", (socket) => {
     if (numberInRoom < 2) {
       socket.join(roomNumber);
       socket.emit("set_cookie", { room: data.number, player: player });
-      //TO DO - ENCRYPTION!
 
       console.log("this has run");
       if (numberInRoom === 1) {
-        // adds the second player to the existing room object that is in the roomGameData array
-        roomMethods.addSecondPlayer(roomNumber, socket.id, roomGameData);
-
         //displays the grid now that two players have joined!
         io.to(roomNumber).emit("recieve_message", {
           display_grid: true,
@@ -45,10 +41,10 @@ io.on("connection", (socket) => {
 
       if (numberInRoom === 0) {
         // adds the room to the roomGameData array
-        roomMethods.addRoomToList(roomNumber, socket.id, roomGameData);
+        roomMethods.addRoomToList(roomNumber, roomGameData);
       }
     } else {
-      //write some logic here for the ELSE statement!
+      //write some logic here for when the room is FULL!
     }
   });
 
