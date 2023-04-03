@@ -27,7 +27,10 @@ io.on("connection", (socket) => {
 
     if (numberInRoom < 2) {
       socket.join(roomNumber);
+      socket.emit("set_cookie", { room: data.number });
+      //TO DO - ENCRYPTION!
 
+      console.log("this has run");
       if (numberInRoom === 1) {
         // adds the second player to the existing room object that is in the roomGameData array
         roomMethods.addSecondPlayer(roomNumber, socket.id, roomGameData);
@@ -46,6 +49,17 @@ io.on("connection", (socket) => {
     } else {
       //write some logic here for the ELSE statement!
     }
+  });
+
+  socket.on("square_clicked", (data) => {
+    console.log(data.square);
+
+    console.log(socket.rooms.has("22"));
+  });
+
+  socket.on("checking-cookie", (data) => {
+    console.log(data);
+    io.emit("cookie-event", { name: "Hannah" });
   });
 });
 

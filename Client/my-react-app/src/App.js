@@ -1,8 +1,10 @@
 import "./App.css";
 import "./Square/Board";
+import { Board } from "./Square/Board";
+
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
-import { Board } from "./Square/Board";
+import Cookies from "js-cookie";
 
 const socket = io.connect("http://localhost:3001");
 function App() {
@@ -15,11 +17,31 @@ function App() {
         document.getElementById("display").style.display = "block";
       }
     });
+
+    socket.on("set_cookie", (data) => {
+      console.log("the cookie has been set!");
+      Cookies.set("room", data.room, { expires: 7 });
+    });
+
+    socket.on("cookie-event", (data) => {
+      let checkExistingCookie = Cookies.get("Name");
+      console.log(checkExistingCookie);
+      if (checkExistingCookie === "Hannah") {
+        document.getElementById(
+          "tag-id"
+        ).innerHTML = `<p> Hello ${data.name} </p>`;
+      }
+    });
   });
 
   const sendRoom = () => {
     socket.emit("send-room", { number: room });
   };
+
+  function checkingCookieInBrowser() {
+    console.log("run!");
+    socket.emit("checking-cookie", { cookie: "Hello" });
+  }
 
   return (
     <div>
@@ -33,6 +55,16 @@ function App() {
 
       <div id="display" style={{ display: "none" }}>
         <Board />
+
+        <p
+          onClick={() => {
+            checkingCookieInBrowser();
+          }}
+        >
+          Checking cookie
+        </p>
+
+        <div id="tag-id"></div>
       </div>
     </div>
   );
