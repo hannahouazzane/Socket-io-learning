@@ -20,7 +20,9 @@ function App() {
 
     socket.on("set_cookie", (data) => {
       console.log("the cookie has been set!");
-      Cookies.set("room", data.room, { expires: 7 });
+      let cookieData = { room: data.room, player: data.player };
+
+      Cookies.set("player-details", JSON.stringify(cookieData), { expires: 7 });
     });
 
     socket.on("cookie-event", (data) => {

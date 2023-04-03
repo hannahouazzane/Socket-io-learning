@@ -21,13 +21,14 @@ io.on("connection", (socket) => {
 
   socket.on("send-room", (data) => {
     const roomNumber = data.number;
+    const player = "unset";
 
     // checks how much space is in the selected room
     let numberInRoom = roomMethods.socketsInRoom(roomNumber, io);
 
     if (numberInRoom < 2) {
       socket.join(roomNumber);
-      socket.emit("set_cookie", { room: data.number });
+      socket.emit("set_cookie", { room: data.number, player: player });
       //TO DO - ENCRYPTION!
 
       console.log("this has run");
