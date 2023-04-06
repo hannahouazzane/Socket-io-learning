@@ -5,7 +5,7 @@ function socketsInRoom(room, io) {
 
 function addRoomToList(room, roomList) {
   let roomInfo = {
-    [room]: { game: ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"] },
+    [room]: { game: ["_", "_", "_", "_", "_", "_", "_", "_", "_"] },
   };
 
   roomList.push(roomInfo);
