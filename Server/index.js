@@ -21,7 +21,8 @@ io.on("connection", (socket) => {
 
   socket.on("send-room", (data) => {
     const roomNumber = data.number;
-    const player = "unset";
+    //TO DO : randomly assign a player to be X or O.
+    const player = "X";
 
     // checks how much space is in the selected room
     let numberInRoom = roomMethods.socketsInRoom(roomNumber, io);
@@ -30,7 +31,6 @@ io.on("connection", (socket) => {
       socket.join(roomNumber);
       socket.emit("set_cookie", { room: data.number, player: player });
 
-      console.log("this has run");
       if (numberInRoom === 1) {
         //displays the grid now that two players have joined!
         io.to(roomNumber).emit("recieve_message", {
@@ -49,13 +49,49 @@ io.on("connection", (socket) => {
   });
 
   socket.on("square_clicked", (data) => {
-    console.log(data.square);
+    let myCookie = data.cookie;
+    console.log(roomGameData);
 
-    console.log(socket.rooms.has("22"));
+    let gameData = null;
+    // get the room number
+    let getRoomNumber = myCookie["room"];
+    let square = data.square;
+
+    let player = myCookie["player"];
+    let disableScreen = null;
+
+    let checking = roomGameData.forEach((i) => {
+      if (Object.keys(i)[0] === getRoomNumber) {
+        gameData = i[getRoomNumber];
+      }
+    });
+
+    if (gameData["game"][data.square] == "_") {
+      console.log(`get the number of the square! ${data.square}`);
+      gameData["game"][data.square] = player;
+      console.log(gameData["game"][data.square]);
+
+      disableScreen = true;
+    } else {
+      disableScreen = false;
+    }
+
+    socket.emit("disable-screen", { disableScreenCheck: disableScreen });
+
+    console.log(player);
+
+    // does not like camel casing!
+
+    io.emit("show_play", {
+      player: player,
+      room: getRoomNumber,
+      square: square,
+    });
   });
 
   socket.on("checking-cookie", (data) => {
     console.log(data);
+
     io.emit("cookie-event", { name: "Hannah" });
   });
 });
