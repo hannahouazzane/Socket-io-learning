@@ -14,7 +14,7 @@ function App() {
     socket.on("recieve_message", (data) => {
       console.log(data.display_grid);
       if (data.display_grid) {
-        document.getElementById("display").style.display = "block";
+        document.getElementById("display-board").style.display = "block";
       }
     });
 
@@ -45,7 +45,7 @@ function App() {
       ></input>
       <button onClick={sendRoom}>Send a message</button>
 
-      <div id="display" style={{ display: "none" }}>
+      <div id="display-board" style={{ display: "none" }}>
         <Board />
 
         <p
