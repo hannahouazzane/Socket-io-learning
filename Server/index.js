@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
       disableScreen = false;
     }
 
-    socket.emit("disable-screen", { disableScreenCheck: disableScreen });
+    socket.emit("disable-screen", { disable_screen_check: disableScreen });
 
     console.log(player);
 
