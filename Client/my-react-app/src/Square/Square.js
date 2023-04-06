@@ -2,10 +2,10 @@ import React from "react";
 
 import "../Square/Game.css";
 
-const Square = ({ method, user }) => {
+const Square = ({ sendPlayer, children, id }) => {
   return (
-    <div className="square" onClick={method}>
-      {user}
+    <div className="square" id={id} onClick={sendPlayer}>
+      {children}
     </div>
   );
 };
