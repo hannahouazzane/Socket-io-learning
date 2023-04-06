@@ -24,16 +24,6 @@ function App() {
 
       Cookies.set("player-details", JSON.stringify(cookieData), { expires: 7 });
     });
-
-    socket.on("cookie-event", (data) => {
-      let checkExistingCookie = Cookies.get("Name");
-      console.log(checkExistingCookie);
-      if (checkExistingCookie === "Hannah") {
-        document.getElementById(
-          "tag-id"
-        ).innerHTML = `<p> Hello ${data.name} </p>`;
-      }
-    });
   });
 
   const sendRoom = () => {
