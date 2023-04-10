@@ -42,7 +42,7 @@ export const Board = () => {
     });
   });
   return (
-    <div className="board-container">
+    <div id="board-container">
       <div id="board" className="board">
         <div className="row">
           <Square
