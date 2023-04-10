@@ -15,23 +15,23 @@ const io = require("socket.io")(http, {
 });
 
 let roomGameData = [];
+let player = "";
+let storeSecondPlayer = "";
 
 io.on("connection", (socket) => {
   console.log("someone has connected!");
 
   socket.on("send-room", (data) => {
     const roomNumber = data.number;
-    //TO DO : randomly assign a player to be X or O.
-    const player = "X";
 
     // checks how much space is in the selected room
     let numberInRoom = roomMethods.socketsInRoom(roomNumber, io);
 
     if (numberInRoom < 2) {
       socket.join(roomNumber);
-      socket.emit("set_cookie", { room: data.number, player: player });
 
       if (numberInRoom === 1) {
+        player = storeSecondPlayer;
         //displays the grid now that two players have joined!
         io.to(roomNumber).emit("recieve_message", {
           display_grid: true,
@@ -42,7 +42,17 @@ io.on("connection", (socket) => {
       if (numberInRoom === 0) {
         // adds the room to the roomGameData array
         roomMethods.addRoomToList(roomNumber, roomGameData);
+        const playerOptions = ["X", "O"];
+        // randomly assigns the first player who joins the room to either X or O
+        player =
+          playerOptions[Math.floor(Math.random() * playerOptions.length)];
+        // stores the second player type in a global variable so that it can be assigned once the second player joins
+        storeSecondPlayer = playerOptions.filter((element) => {
+          return element !== player;
+        });
       }
+
+      socket.emit("set_cookie", { room: data.number, player: player });
     } else {
       //write some logic here for when the room is FULL!
     }
