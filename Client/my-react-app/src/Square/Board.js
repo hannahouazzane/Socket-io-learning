@@ -27,22 +27,38 @@ export const Board = () => {
 
       if (playerRoom === data.room) {
         document.getElementById(squareID).innerHTML = `<p> ${data.player} </p>`;
-      }
-    });
-    socket.on("disable-screen", (data) => {
-      console.log("testing to see if this has been recieved!");
-      if (data.disable_screen_check) {
-        console.log("is this detecting the disabling");
-        document.getElementById("board-container").onclick = () => {
-          alert("It is not your turn!");
-        };
-
-        document.getElementById("board").style.pointerEvents = "none";
+        //// if it X's go ... and they've gone, you don't want them clicking around again - so you set the onClick to show up as the Not your go
+        //// Now it is O's go, the onClick has already been set to be showing
+        if (playerCookie()["player"] === data.player) {
+          for (let i = 0; i < 9; i++) {
+            console.log("square-" + i.toString());
+            document.getElementById(
+              "square-" + i.toString()
+            ).style.pointerEvents = "none";
+          }
+          document.getElementById("board-container").onclick = () => {
+            document.getElementById(
+              "testing"
+            ).innerHTML = `<p> Not your turn!</p>`;
+          };
+        } else {
+          for (let i = 0; i < 9; i++) {
+            console.log("square-" + i.toString());
+            document.getElementById(
+              "square-" + i.toString()
+            ).style.pointerEvents = "auto";
+          }
+          document.getElementById("testing").innerHTML = ``;
+          document.getElementById("board-container").onclick = () => {
+            document.getElementById("testing").innerHTML = ``;
+          };
+        }
       }
     });
   });
   return (
     <div id="board-container">
+      <p id="testing"></p>
       <div id="board" className="board">
         <div className="row">
           <Square
