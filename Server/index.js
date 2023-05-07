@@ -1,4 +1,5 @@
 const roomMethods = require("./startGame");
+const checkGameStatus = require("./CalculateResults");
 const express = require("express");
 
 /// defines the express server? Express.js, or simply Express, is a back end web application framework for building RESTful APIs with Node.js
@@ -47,9 +48,10 @@ io.on("connection", (socket) => {
         player =
           playerOptions[Math.floor(Math.random() * playerOptions.length)];
         // stores the second player type in a global variable so that it can be assigned once the second player joins
-        storeSecondPlayer = playerOptions.filter((element) => {
+        let filterSecondPlayer = playerOptions.filter((element) => {
           return element !== player;
         });
+        storeSecondPlayer = filterSecondPlayer[0];
       }
 
       socket.emit("set_cookie", { room: data.number, player: player });
@@ -63,12 +65,12 @@ io.on("connection", (socket) => {
     console.log(roomGameData);
 
     let gameData = null;
+    let overallGameStaus = null;
     // get the room number
     let getRoomNumber = myCookie["room"];
     let square = data.square;
 
     let player = myCookie["player"];
-    let disableScreen = null;
 
     let checking = roomGameData.forEach((i) => {
       if (Object.keys(i)[0] === getRoomNumber) {
@@ -81,12 +83,9 @@ io.on("connection", (socket) => {
       gameData["game"][data.square] = player;
       console.log(gameData["game"][data.square]);
 
-      disableScreen = true;
-    } else {
-      disableScreen = false;
+      overallGameStaus = checkGameStatus.checkResults(player, gameData["game"]);
+      console.log(overallGameStaus);
     }
-
-    socket.emit("disable-screen", { disable_screen_check: disableScreen });
 
     console.log(player);
 
@@ -96,6 +95,7 @@ io.on("connection", (socket) => {
       player: player,
       room: getRoomNumber,
       square: square,
+      overallGameStaus: overallGameStaus,
     });
   });
 
