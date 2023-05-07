@@ -1,9 +1,10 @@
-import "../Square/Game.css";
+import "./Game.css";
 import Square from "../Square/Square";
 import React, { useEffect } from "react";
 
 import io from "socket.io-client";
 import Cookies from "js-cookie";
+import { ResultsPopup } from "../ResultsPopup/ResultsPopup";
 const socket = io.connect("http://localhost:3001");
 
 const playerCookie = () => {
@@ -20,6 +21,13 @@ const squareClicked = (number) => {
 };
 
 export const Board = () => {
+  function changeSquareClickable(change) {
+    for (let i = 0; i < 9; i++) {
+      console.log("square-" + i.toString());
+      document.getElementById("square-" + i.toString()).style.pointerEvents =
+        change;
+    }
+  }
   useEffect(() => {
     socket.on("show_play", (data) => {
       const playerRoom = playerCookie()["room"];
@@ -29,35 +37,45 @@ export const Board = () => {
         document.getElementById(squareID).innerHTML = `<p> ${data.player} </p>`;
         //// if it X's go ... and they've gone, you don't want them clicking around again - so you set the onClick to show up as the Not your go
         //// Now it is O's go, the onClick has already been set to be showing
-        if (playerCookie()["player"] === data.player) {
-          for (let i = 0; i < 9; i++) {
-            console.log("square-" + i.toString());
-            document.getElementById(
-              "square-" + i.toString()
-            ).style.pointerEvents = "none";
-          }
-          document.getElementById("board-container").onclick = () => {
-            document.getElementById(
-              "testing"
-            ).innerHTML = `<p> Not your turn!</p>`;
-          };
+
+        if (data.overallGameStaus !== "Continue") {
+          changeSquareClickable("none");
+          document.getElementById("pop-up").style.display = "flex";
+          document.getElementById(
+            "gameResult"
+          ).innerHTML = `<p> ${data.overallGameStaus} </p>`;
         } else {
-          for (let i = 0; i < 9; i++) {
-            console.log("square-" + i.toString());
-            document.getElementById(
-              "square-" + i.toString()
-            ).style.pointerEvents = "auto";
-          }
-          document.getElementById("testing").innerHTML = ``;
-          document.getElementById("board-container").onclick = () => {
+          if (playerCookie()["player"] === data.player) {
+            for (let i = 0; i < 9; i++) {
+              document.getElementById(
+                "square-" + i.toString()
+              ).style.pointerEvents = "none";
+            }
+            document.getElementById("board-container").onclick = () => {
+              document.getElementById(
+                "testing"
+              ).innerHTML = `<p> Not your turn!</p>`;
+            };
+          } else {
+            for (let i = 0; i < 9; i++) {
+              console.log("square-" + i.toString());
+              document.getElementById(
+                "square-" + i.toString()
+              ).style.pointerEvents = "auto";
+            }
             document.getElementById("testing").innerHTML = ``;
-          };
+            document.getElementById("board-container").onclick = () => {
+              document.getElementById("testing").innerHTML = ``;
+            };
+          }
         }
       }
     });
   });
   return (
     <div id="board-container">
+      <ResultsPopup />
+
       <p id="testing"></p>
       <div id="board" className="board">
         <div className="row">
