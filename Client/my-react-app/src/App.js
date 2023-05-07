@@ -36,7 +36,8 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="container">
+      <h1>Welcome to Tik tac toe!</h1>
       <label>Join a room</label>
       <input
         onChange={(event) => {
