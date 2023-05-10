@@ -22,7 +22,7 @@ function App() {
       console.log("the cookie has been set!");
       let cookieData = { room: data.room, player: data.player };
 
-      Cookies.set("player-details", JSON.stringify(cookieData), { expires: 7 });
+      Cookies.set("player-details", JSON.stringify(cookieData), { expires: 1 });
     });
   });
 
