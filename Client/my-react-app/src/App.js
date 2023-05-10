@@ -27,13 +27,13 @@ function App() {
   });
 
   const sendRoom = () => {
-    socket.emit("send-room", { number: room });
-  };
+    let cookie = null;
+    if (Cookies.get("player-details")) {
+      cookie = JSON.parse(Cookies.get("player-details"));
+    }
 
-  function checkingCookieInBrowser() {
-    console.log("run!");
-    socket.emit("checking-cookie", { cookie: "Hello" });
-  }
+    socket.emit("send-room", { number: room, cookie: cookie });
+  };
 
   return (
     <div className="container">
@@ -48,16 +48,6 @@ function App() {
 
       <div id="display-board" style={{ display: "none" }}>
         <Board />
-
-        <p
-          onClick={() => {
-            checkingCookieInBrowser();
-          }}
-        >
-          Checking cookie
-        </p>
-
-        <div id="tag-id"></div>
       </div>
     </div>
   );

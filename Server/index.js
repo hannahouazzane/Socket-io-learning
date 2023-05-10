@@ -20,15 +20,14 @@ let player = "";
 let storeSecondPlayer = "";
 
 io.on("connection", (socket) => {
-  console.log("someone has connected!");
-
   socket.on("send-room", (data) => {
     const roomNumber = data.number;
+    const cookie = data.cookie;
 
     // checks how much space is in the selected room
-    let numberInRoom = roomMethods.socketsInRoom(roomNumber, io);
+    const numberInRoom = roomMethods.socketsInRoom(roomNumber, io);
 
-    if (numberInRoom < 2) {
+    if (numberInRoom < 2 && cookie["room"] !== roomNumber) {
       socket.join(roomNumber);
 
       if (numberInRoom === 1) {
@@ -61,18 +60,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("square_clicked", (data) => {
-    let myCookie = data.cookie;
-    console.log(roomGameData);
-
     let gameData = null;
     let overallGameStaus = null;
-    // get the room number
-    let getRoomNumber = myCookie["room"];
+    let myCookie = data.cookie;
     let square = data.square;
-
+    let getRoomNumber = myCookie["room"];
     let player = myCookie["player"];
 
-    let checking = roomGameData.forEach((i) => {
+    roomGameData.forEach((i) => {
       if (Object.keys(i)[0] === getRoomNumber) {
         gameData = i[getRoomNumber];
       }
@@ -84,10 +79,7 @@ io.on("connection", (socket) => {
       console.log(gameData["game"][data.square]);
 
       overallGameStaus = checkGameStatus.checkResults(player, gameData["game"]);
-      console.log(overallGameStaus);
     }
-
-    console.log(player);
 
     // does not like camel casing!
 
