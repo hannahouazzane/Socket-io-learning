@@ -5,7 +5,10 @@ function socketsInRoom(room, io) {
 
 function addRoomToList(room, roomList) {
   let roomInfo = {
-    [room]: { game: ["_", "_", "_", "_", "_", "_", "_", "_", "_"] },
+    [room]: {
+      game: ["_", "_", "_", "_", "_", "_", "_", "_", "_"],
+      secondPlayer: null,
+    },
   };
 
   roomList.push(roomInfo);

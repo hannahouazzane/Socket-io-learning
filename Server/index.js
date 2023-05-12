@@ -16,22 +16,46 @@ const io = require("socket.io")(http, {
 });
 
 let roomGameData = [];
-let player = "";
-let storeSecondPlayer = "";
+
+function getGameData(room) {
+  let gameData = null;
+  roomGameData.forEach((i) => {
+    if (Object.keys(i)[0] === room) {
+      gameData = i[room];
+    }
+  });
+
+  return gameData;
+}
 
 io.on("connection", (socket) => {
   socket.on("send-room", (data) => {
     const roomNumber = data.number;
     const cookie = data.cookie;
+    let player = null;
+    const checkCookieRoom = () => {
+      let checkingRoom = true;
+      if (cookie !== null) {
+        if (cookie["room"] === roomNumber) {
+          checkingRoom = false;
+        }
+      }
+
+      return checkingRoom;
+    };
 
     // checks how much space is in the selected room
     const numberInRoom = roomMethods.socketsInRoom(roomNumber, io);
 
-    if (numberInRoom < 2 && cookie["room"] !== roomNumber) {
+    if (numberInRoom < 2 && checkCookieRoom()) {
       socket.join(roomNumber);
 
       if (numberInRoom === 1) {
-        player = storeSecondPlayer;
+        player = getGameData(roomNumber)["secondPlayer"];
+
+        delete getGameData(roomNumber)["secondPlayer"];
+        console.log(player);
+
         //displays the grid now that two players have joined!
         io.to(roomNumber).emit("recieve_message", {
           display_grid: true,
@@ -50,7 +74,7 @@ io.on("connection", (socket) => {
         let filterSecondPlayer = playerOptions.filter((element) => {
           return element !== player;
         });
-        storeSecondPlayer = filterSecondPlayer[0];
+        getGameData(roomNumber)["secondPlayer"] = filterSecondPlayer[0];
       }
 
       socket.emit("set_cookie", { room: data.number, player: player });
@@ -60,23 +84,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("square_clicked", (data) => {
-    let gameData = null;
     let overallGameStaus = null;
     let myCookie = data.cookie;
     let square = data.square;
     let getRoomNumber = myCookie["room"];
     let player = myCookie["player"];
-
-    roomGameData.forEach((i) => {
-      if (Object.keys(i)[0] === getRoomNumber) {
-        gameData = i[getRoomNumber];
-      }
-    });
+    let gameData = getGameData(getRoomNumber);
+    console.log(`testing this works ${player}`);
 
     if (gameData["game"][data.square] == "_") {
-      console.log(`get the number of the square! ${data.square}`);
       gameData["game"][data.square] = player;
-      console.log(gameData["game"][data.square]);
 
       overallGameStaus = checkGameStatus.checkResults(player, gameData["game"]);
     }
@@ -89,12 +106,6 @@ io.on("connection", (socket) => {
       square: square,
       overallGameStaus: overallGameStaus,
     });
-  });
-
-  socket.on("checking-cookie", (data) => {
-    console.log(data);
-
-    io.emit("cookie-event", { name: "Hannah" });
   });
 });
 
