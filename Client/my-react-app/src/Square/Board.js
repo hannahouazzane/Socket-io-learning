@@ -17,7 +17,22 @@ const playerCookie = () => {
 };
 
 const squareClicked = (number) => {
-  socket.emit("square_clicked", { square: number, cookie: playerCookie() });
+  if (
+    playerCookie()["gameStatus"] === "Not started" &&
+    playerCookie()["player"] === "O"
+  ) {
+    document.getElementById("testing").innerHTML = `<p> Not your turn!</p>`;
+
+    Cookies.set(
+      "player-details",
+      JSON.stringify({
+        room: playerCookie()["room"],
+        player: playerCookie()["player"],
+      })
+    );
+  } else {
+    socket.emit("square_clicked", { square: number, cookie: playerCookie() });
+  }
 };
 
 export const Board = () => {
@@ -35,8 +50,6 @@ export const Board = () => {
 
       if (playerRoom === data.room) {
         document.getElementById(squareID).innerHTML = `<p> ${data.player} </p>`;
-        //// if it X's go ... and they've gone, you don't want them clicking around again - so you set the onClick to show up as the Not your go
-        //// Now it is O's go, the onClick has already been set to be showing
 
         if (data.overallGameStaus !== "Continue") {
           changeSquareClickable("none");
