@@ -14,7 +14,6 @@ function checkWinning(player, gameDataList) {
   winningPatterns.forEach((i) => {
     let foundPattern = true;
     i.forEach((item) => {
-      console.log(gameDataList[item] + ":" + item);
       if (gameDataList[item] !== player) {
         foundPattern = false;
       }
