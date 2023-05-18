@@ -9,10 +9,25 @@ import Cookies from "js-cookie";
 const socket = io.connect("http://localhost:3001");
 function App() {
   const [room, setRoom] = useState("");
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", alertUser);
+    window.addEventListener("unload", testingUnload);
+    return () => {
+      window.removeEventListener("beforeunload", alertUser);
+    };
+  }, []);
+  const alertUser = (e) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+  const testingUnload = () => {
+    Cookies.remove("player-details");
+  };
 
   useEffect(() => {
     socket.on("recieve_message", (data) => {
-      console.log(data.display_grid);
       if (data.display_grid) {
         document.getElementById("display-board").style.display = "block";
       }
@@ -23,34 +38,48 @@ function App() {
       let cookieData = {
         room: data.room,
         player: data.player,
-        gameStatus: "Not started",
+        name: data.name,
       };
 
       Cookies.set("player-details", JSON.stringify(cookieData), { expires: 7 });
     });
   });
 
-  const sendRoom = () => {
-    let cookie = null;
+  const sendPlayerInfo = (e) => {
+    e.preventDefault();
     if (Cookies.get("player-details")) {
-      cookie = JSON.parse(Cookies.get("player-details"));
+      console.log("You have already requested to join a room.");
     }
 
-    socket.emit("send-room", { number: room, cookie: cookie });
+    socket.emit("send-room", { number: room, name: name });
   };
 
   return (
     <div className="container">
       <h1>Welcome to Tik tac toe!</h1>
-      <label>Join a room</label>
-      <input
-        onChange={(event) => {
-          setRoom(event.target.value);
+      <form
+        onSubmit={(e) => {
+          sendPlayerInfo(e);
         }}
-      ></input>
-      <button onClick={sendRoom}>Send a message</button>
+      >
+        <label>Please enter your name</label>
+        <input
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+        ></input>
+        <label>Join a room</label>
+        <input
+          onChange={(event) => {
+            setRoom(event.target.value);
+          }}
+        ></input>
+
+        <button type="submit">Send a message</button>
+      </form>
 
       <div id="display-board" style={{ display: "none" }}>
+        <h2 id="player-turn"> </h2>
         <Board />
       </div>
     </div>
