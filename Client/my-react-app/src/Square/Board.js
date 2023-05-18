@@ -17,22 +17,7 @@ const playerCookie = () => {
 };
 
 const squareClicked = (number) => {
-  if (
-    playerCookie()["gameStatus"] === "Not started" &&
-    playerCookie()["player"] === "O"
-  ) {
-    document.getElementById("testing").innerHTML = `<p> Not your turn!</p>`;
-
-    Cookies.set(
-      "player-details",
-      JSON.stringify({
-        room: playerCookie()["room"],
-        player: playerCookie()["player"],
-      })
-    );
-  } else {
-    socket.emit("square_clicked", { square: number, cookie: playerCookie() });
-  }
+  socket.emit("square_clicked", { square: number, cookie: playerCookie() });
 };
 
 export const Board = () => {
